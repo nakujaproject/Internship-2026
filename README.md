@@ -7,7 +7,7 @@
 **Main Bottleneck**: Solid Propulsion Team (Pivot from Aluminium to mild steel casing).
 
 ## Quick Navigation
-- [Project Overview](./01_PROJECT_OVERVIEW)
+- [Project Overview](./ 01_PROJECT_OVERVIEW)
 - [Solid Propulsion](./02_SOLID_PROPULSION) ← **Active Focus**
 - [Airframe](./03_AIRFRAME)
 - [Recovery/Avionics](./04_RECOVERY)
