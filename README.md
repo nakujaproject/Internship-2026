@@ -7,10 +7,10 @@
 **Main Bottleneck**: Solid Propulsion Team (Pivot from Aluminium to mild steel casing).
 
 ## Quick Navigation
-- [Project Overview](./ 01_PROJECT_OVERVIEW)
-- [Solid Propulsion](./02_SOLID_PROPULSION) ← **Active Focus**
-- [Airframe](./03_AIRFRAME)
-- [Recovery/Avionics](./04_RECOVERY)
+- [Project Overview](./00_PROJECT_OVERVIEW)
+- [Solid Propulsion](./01_SOLID_PROPULSION) ← **Active Focus**
+- [Airframe](./02_AIRFRAME)
+- [Recovery/Avionics](./03_RECOVERY)
 - [Progress Tracker](./00_PROJECT_OVERVIEW/02_Progress_Tracker.md)
 
 **Workshop Hours**: 9:00 AM – 5:00 PM, Monday–Friday.
