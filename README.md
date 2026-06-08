@@ -11,13 +11,12 @@
 - [Solid Propulsion](./SOLID_PROPULSION) ← **Active Focus**
 - [Airframe](./AIRFRAME)
 - [Recovery/Avionics](./RECOVERY_AVIONICS)
-- [Progress Tracker](./PROJECT_OVERVIEW/Progress_Tracker.xlsx)
+- [Progress Tracker](./PROJECT_OVERVIEW/Progress_Tracker.md)
 
 **Workshop Hours**: 9:00 AM – 5:00 PM, Monday–Friday.
 
 **How to Contribute**: See [Contributing Guidelines](CONTRIBUTING.md)
 
-**Repository Structure**:
 
 # Nakuja Rocketry Repository Structure
 
@@ -26,8 +25,7 @@ Internship-2026/
 ├── README.md                          # Main landing page
 ├── PROJECT_OVERVIEW/
 │   ├── Master_Plan.md
-│   ├── Progress_Tracker.xlsx
-│   ├── Weekly_Reports/
+│   ├── Progress_Tracker.md
 │   ├── Meeting_Minutes/
 │   ├── Risk_Register.md
 │   ├── Launch_Checklist.md
@@ -47,7 +45,6 @@ Internship-2026/
 │   │
 │   ├── Static_Tests/
 │   │   ├── One_Grain/
-│   │   ├── Four_Grain/
 │   │   └── Five_Grain/
 │   │
 │   └── Photos_&_Videos/
