@@ -19,8 +19,11 @@
 
 **Repository Structure**:
 
+# Nakuja Rocketry Repository Structure
+
+```text
 Internship-2026/
-├── README.md                          ← Main landing page
+├── README.md                          # Main landing page
 ├── PROJECT_OVERVIEW/
 │   ├── Master_Plan.md
 │   ├── Progress_Tracker.xlsx
@@ -30,20 +33,23 @@ Internship-2026/
 │   ├── Launch_Checklist.md
 │   └── Timeline_Gantt.md
 │
-├── SOLID_PROPULSION/                  ← Main bottleneck team
+├── SOLID_PROPULSION/                  # Main bottleneck team
 │   ├── Propellant_Team/
 │   │   ├── Grains/
 │   │   ├── Liners_Mandrels/
 │   │   ├── Experiments/
 │   │   └── Research/
+│   │
 │   ├── Machining_Team/
 │   ├── Ignition_Circuit/
 │   ├── 3D_Printing/
 │   ├── Documentation/
+│   │
 │   ├── Static_Tests/
 │   │   ├── One_Grain/
 │   │   ├── Four_Grain/
 │   │   └── Five_Grain/
+│   │
 │   └── Photos_&_Videos/
 │
 ├── AIRFRAME/
@@ -75,9 +81,12 @@ Internship-2026/
 │   │   ├── experiment-template.md
 │   │   ├── static-test-template.md
 │   │   └── task-template.md
-│   └── workflows/                     ← Optional CI/CD later
+│   │
+│   └── workflows/
+│       └── README.md                  # Future CI/CD workflows
 │
-└── docs/                              ← Additional documentation
+└── docs/
     ├── Scientific_Method_Guide.md
     ├── Grain_Preparation_Criteria.md
     └── Folder_Naming_Convention.md
+```
