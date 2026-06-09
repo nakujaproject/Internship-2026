@@ -2,7 +2,7 @@
 
 **Mission**: Build and launch a sub-orbital rocket to 100 km (Kármán Line).
 
-**Current Goal**: Successful N4 Launch by end of August 2026.
+**Current Goal**: Successful N4 Launch by end of July 2026.
 
 **Main Bottleneck**: Solid Propulsion Team (Pivot from Aluminium to mild steel casing).
 
@@ -35,6 +35,8 @@ Internship-2026/
 │   ├── 01_Propellant_Team/
 │   │   ├── Grains/
 │   │   ├── Liners_Mandrels/
+│   │   ├── Ignitors/
+│   │   ├── Crimson_Powder/
 │   │   ├── Experiments/
 │   │   └── Research/
 │   ├── 02_Machining_Team/
@@ -43,6 +45,8 @@ Internship-2026/
 │   │   ├── Motor_Assembly/
 |   |   └── Test_Stand/
 │   ├── 03_Ignition_Circuit/
+|   |   ├── Software/
+|   |   ├── Hardware/
 │   ├── 04_3D_Printing/
 │   ├── 05_Documentation/
 │   │
