@@ -1,4 +1,4 @@
-# Nakuja Rocketry Club
+# Nakuja Project internship 2026
 
 **Mission**: Build and launch a sub-orbital rocket to 100 km (Kármán Line).
 
