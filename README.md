@@ -8,7 +8,7 @@
 
 ## Quick Navigation
 - [Project Overview](./00_PROJECT_OVERVIEW)
-- [Solid Propulsion](./01_SOLID_PROPULSION) ← **Active Focus**
+- [Solid Propulsion](./01_SOLID_PROPULSION)
 - [Airframe](./02_AIRFRAME)
 - [Recovery/Avionics](./03_RECOVERY)
 - [Progress Tracker](./00_PROJECT_OVERVIEW/02_Progress_Tracker.md)
