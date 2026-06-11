@@ -4,8 +4,6 @@
 
 **Current Goal**: Successful N4 Launch by end of July 2026.
 
-**Main Bottleneck**: Solid Propulsion Team (Pivot from Aluminium to mild steel casing).
-
 ## Quick Navigation
 - [Project Overview](./00_PROJECT_OVERVIEW)
 - [Solid Propulsion](./01_SOLID_PROPULSION)
