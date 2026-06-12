@@ -20,19 +20,23 @@
 
 ```text
 Internship-2026/
-├── README.md                          # Main landing page
+├── README.md                        
 ├── 00_PROJECT_OVERVIEW/
-│   ├── 01_Master_Plan.md
-│   ├── 02_Progress_Tracker.md
+│   ├── 01_N4_ROCKET/
+│   │   ├── image/
+│   │   ├── Rocket_Specification.md
+│   ├── 02_Organistaion_&_Structure/
+│   │   ├── Nakuja_Project_Organisation_&_Operational_Structure.docx
+│   │   ├── 02_Progress_Tracker.md
 │   ├── 03_Meeting_Minutes/
 │   ├── 04_Risk_Register.md
 │   ├── 05_Launch_Checklist.md
 │   └── 06_Timeline_Gantt.md
 │
-├── 01_SOLID_PROPULSION/                  # Main bottleneck team
-│   ├── 01_Propellant_Team/
+├── 01_SOLID_PROPULSION/                  
+│   ├── 01_Propellant/
 │   │   ├── Grains/
-│   │   ├── Liners_Mandrels/
+│   │   ├── Liners/
 │   │   ├── Ignitors/
 │   │   ├── Crimson_Powder/
 │   │   ├── Experiments/
