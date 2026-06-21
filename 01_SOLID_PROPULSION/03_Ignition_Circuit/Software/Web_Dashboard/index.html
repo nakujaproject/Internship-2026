@@ -1,0 +1,1037 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAKUJA SOLIDS DASHBOARD</title>
+ <link rel="icon" type="image/png" href="nakuja_icon.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Space-themed color palette */
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      /* Rocket colors */
+      --rocket-orange: #f97316;
+      --rocket-orange-glow: rgba(249, 115, 22, 0.3);
+      
+      /* Telemetry colors */
+      --temp-color: #ef4444;
+      --temp-glow: rgba(239, 68, 68, 0.3);
+      --pressure-color: #3b82f6;
+      --pressure-glow: rgba(59, 130, 246, 0.3);
+      --thrust-color: #22c55e;
+      --thrust-glow: rgba(34, 197, 94, 0.3);
+      
+      /* Status colors */
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      
+      /* Effects */
+      --border-radius: 12px;
+      --shadow-glow: 0 0 30px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* RGB versions for rgba usage */
+      --bg-primary-rgb:15, 23, 42;
+      --bg-secondary-rgb: 30, 41, 59;
+      --rocket-orange-rgb: 249, 115, 22;
+      --danger-color-rgb: 239, 68, 68;
+      --success-color-rgb: 16, 185, 129;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, #0c1220 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, #2d3748 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-container {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+      animation: pulse 2s infinite;
+      overflow: hidden;
+    }
+
+    #nakuja-logo {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    #nakuja-logo:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.6));
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); }
+      50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.9); }
+    }
+
+    .title-text h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--rocket-orange), #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .title-text p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .status-indicators {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+    }
+
+    .status-badge.connected {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+
+    .status-badge.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger-color);
+      color: var(--danger-color);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-dot.green { background: var(--success-color); }
+    .status-dot.red { background: var(--danger-color); }
+
+    /* Telemetry Cards */
+    .telemetry-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .telemetry-card {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+      border-radius: var(--border-radius);
+      padding: 24px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .telemetry-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+      pointer-events: none;
+    }
+
+    .telemetry-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .telemetry-card.temperature { border-color: var(--temp-color); }
+    .telemetry-card.temperature:hover { box-shadow: var(--shadow-glow) var(--temp-glow); }
+
+    .telemetry-card.pressure { border-color: var(--pressure-color); }
+    .telemetry-card.pressure:hover { box-shadow: var(--shadow-glow) var(--pressure-glow); }
+
+    .telemetry-card.thrust { border-color: var(--thrust-color); }
+    .telemetry-card.thrust:hover { box-shadow: var(--shadow-glow) var(--thrust-glow); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-icon { font-size: 1.25rem; }
+
+    .card-value {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .temperature .card-header, .temperature .card-value { color: var(--temp-color); }
+    .pressure .card-header, .pressure .card-value { color: var(--pressure-color); }
+    .thrust .card-header, .thrust .card-value { color: var(--thrust-color); }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      color: white;
+    }
+    
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--success-color), #059669);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    .start-btn:hover { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+
+    .stop-btn {
+      background: linear-gradient(135deg, var(--danger-color), #b91c1c);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+    .stop-btn:hover { box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4); }
+
+    .download-btn {
+      background: linear-gradient(135deg, var(--pressure-color), #1d4ed8);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    .download-btn:hover { box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); }
+
+    /* Charts */
+    .charts-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .chart-card {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.03) 100%);
+      pointer-events: none;
+    }
+
+    .chart-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-title.temperature { color: var(--temp-color); }
+    .chart-title.pressure { color: var(--pressure-color); }
+    .chart-title.thrust { color: var(--thrust-color); }
+    .chart-title.event-log {
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .chart-canvas {
+      width: 100% !important;
+      height: 250px !important;
+    }
+
+    /* Event Log Specific Styles */
+    .event-log-card {
+        grid-column: span 2;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .event-log-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 15px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+
+    .event-log-content::-webkit-scrollbar-thumb {
+        background: rgba(var(--rocket-orange-rgb), 0.6);
+    }
+
+    .event-log-content p {
+        margin-bottom: 8px;
+        padding: 12px 18px;
+        background-color: rgba(var(--bg-secondary-rgb), 0.7);
+        border-left: 5px solid var(--rocket-orange);
+        border-radius: var(--border-radius);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        font-weight: 500;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .event-log-content p:last-child { margin-bottom: 0; }
+
+    .event-log-content .event-time {
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+
+    .event-log-content .event-message { flex-grow: 1; }
+
+    .event-log-content .ignition-status {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-log-content .ignition-armed {
+        background-color: rgba(var(--danger-color-rgb), 0.8);
+        color: var(--text-primary);
+    }
+
+    .event-log-content .ignition-not-armed {
+        background-color: rgba(var(--success-color-rgb), 0.8);
+        color: var(--bg-primary);
+    }
+
+    .event-log-content .no-events {
+        text-align: center;
+        margin-top: 30px;
+        color: var(--text-muted);
+        font-style: italic;
+        background-color: transparent;
+        border-left: none;
+        padding: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .status-bar {
+        flex-direction: column;
+        text-align: center;
+      }
+      .telemetry-cards, .charts-container { grid-template-columns: 1fr; }
+      .controls { justify-content: center; }
+      .title-text h1 { font-size: 1.5rem; }
+      .card-value { font-size: 2.5rem; }
+      .event-log-card { grid-column: span 1; }
+    }
+
+    @media (min-width: 1000px) {
+      .charts-container { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      .event-log-card { grid-column: span 2; }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--rocket-orange);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--rocket-orange);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: #ea580c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="status-bar">
+      <div class="title-section">
+        <div class="logo-container">
+<img id="nakuja-logo" src="nakuja_icon.png" alt="Nakuja Logo">
+        </div>
+        <div class="title-text">
+          <h1>NAKUJA SOLIDS PROPULSION</h1> <p>Real-time sensor monitoring</p>
+        </div>
+      </div>
+      
+      <div class="status-indicators">
+        <div class="connection-control" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="esp-ip" placeholder="Enter ESP IP (from LCD)" 
+                   style="padding: 8px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: white;">
+            <button onclick="connectToEsp()" class="btn"
+                    style="background: #2563eb;">
+                Connect
+            </button>
+        </div>
+
+        <div class="status-badge" id="system-status">
+          <div class="status-dot" id="system-dot"></div>
+          <span id="system-text">System Status: <span class="loading"></span></span>
+        </div>
+        <div class="status-badge" id="connection-status">
+          <div class="status-dot" id="connection-dot"></div>
+          <span id="connection-text">Connecting...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="telemetry-cards">
+      <div class="telemetry-card temperature">
+        <div class="card-header">
+          <span class="card-icon">🌡️</span>
+          <span>Temperature</span>
+        </div>
+        <div class="card-value" id="temp-value">-- °C</div>
+      </div>
+      
+      <div class="telemetry-card pressure">
+        <div class="card-header">
+          <span class="card-icon">⚡</span>
+          <span>Pressure</span>
+        </div>
+        <div class="card-value" id="pressure-value">-- kPa</div>
+      </div>
+      
+      <div class="telemetry-card thrust">
+        <div class="card-header">
+          <span class="card-icon">🔥</span>
+          <span>Thrust</span>
+        </div>
+        <div class="card-value" id="thrust-value">-- N</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn start-btn" id="start-btn" onclick="toggleRecording(true)">
+        <span>⏺️</span> Start Recording
+      </button>
+      <button class="btn stop-btn" id="stop-btn" onclick="toggleRecording(false)" disabled>
+        <span>⏹️</span> Stop Recording
+      </button>
+      <button class="btn download-btn" id="download-btn">
+        <span>⬇️</span> Download CSV
+      </button>
+    </div>
+
+    <div class="charts-container">
+      <div class="chart-card">
+        <div class="chart-title temperature">
+          <span>🌡️</span>
+          Temperature
+        </div>
+        <canvas id="tempChart" class="chart-canvas"></canvas>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-title pressure">
+          <span>⚡</span>
+          Pressure
+        </div>
+        <canvas id="pressureChart" class="chart-canvas"></canvas>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-title thrust">
+          <span>🔥</span>
+          Thrust
+        </div>
+        <canvas id="thrustChart" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card event-log-card">
+        <div class="chart-title event-log">
+          <span>📜</span>
+          Event Log
+        </div>
+        <div class="event-log-content" id="event-log">
+          <p class="no-events">No events yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let socket = null;
+    let isConnected = false;
+    let isRecording = false; 
+    let tempChart, pressureChart, thrustChart;
+    let csvData = [["Stopwatch Time (HH:mm:ss.ms)", "Temperature (°C)", "Pressure (kPa)", "Thrust (N)"]];
+    
+    // Optimized for 80 SPS
+    const maxPoints = 500; 
+    let zeroTime = Date.now();
+    
+    // Event Log specific variables
+    const eventLogElement = document.getElementById('event-log');
+    const maxEvents = 100;
+    let isIgnitionArmed = false;
+
+    // --- HIGH-SPEED BUFFERING VARIABLES ---
+    let latestTemp = 0, latestPressure = 0, latestThrust = 0;
+    let lastUiUpdate = 0;
+    let pendingChartUpdate = false;
+
+    // Helper: Format milliseconds to HH:mm:ss.SSS for CSV
+    function formatTimeDetailed(ms) {
+        const date = new Date(ms);
+        const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+        return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+    }
+
+    // Helper: Format milliseconds to mm:ss for Chart Display
+    function formatTimeChart(ms) {
+        const date = new Date(ms);
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        return `${minutes}:${seconds}`;
+    }
+
+    // Toggle Recording Function
+    function toggleRecording(state) {
+        isRecording = state;
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        
+        if (state) {
+            zeroTime = Date.now(); 
+            csvData = [["Stopwatch Time (HH:mm:ss.ms)", "Temperature (°C)", "Pressure (kPa)", "Thrust (N)"]]; 
+            clearCharts(); 
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            addEventToLog("Recording started. Stopwatch reset to 00:00:00.000.", "success");
+        } else {
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            addEventToLog("Recording stopped.", "warning");
+        }
+    }
+
+    function clearCharts() {
+        if(tempChart) { tempChart.data.datasets[0].data = []; tempChart.update(); }
+        if(pressureChart) { pressureChart.data.datasets[0].data = []; pressureChart.update(); }
+        if(thrustChart) { thrustChart.data.datasets[0].data = []; thrustChart.update(); }
+    }
+
+    function updateIgnitionArmedStatus(armed) {
+        isIgnitionArmed = armed;
+    }
+
+    function addEventToLog(message, type = 'info', ignitionArmedStatus = null) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      const noEventsParagraph = eventLogElement.querySelector('.no-events');
+      if (noEventsParagraph) {
+        eventLogElement.removeChild(noEventsParagraph);
+      }
+
+      const eventParagraph = document.createElement('p');
+      let content = `<span class="event-time">[${timeString}]</span> <span class="event-message">${message}</span>`;
+
+      if (ignitionArmedStatus !== null) {
+          const statusClass = ignitionArmedStatus ? 'ignition-armed' : 'ignition-not-armed';
+          const statusText = ignitionArmedStatus ? 'ARMED' : 'NOT ARMED';
+          content += `<span class="ignition-status ${statusClass}">${statusText}</span>`;
+      }
+
+      eventParagraph.innerHTML = content;
+      eventLogElement.prepend(eventParagraph);
+
+      while (eventLogElement.children.length > maxEvents) {
+        eventLogElement.removeChild(eventLogElement.lastChild);
+      }
+    }
+
+    const chartConfig = {
+      type: 'line',
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 }, // Critical for high data rate (80 SPS)
+        interaction: { intersect: false, mode: 'index' },
+        scales: {
+          x: {
+            type: 'linear', 
+            position: 'bottom',
+            title: {
+                display: true,
+                text: 'Time (mm:ss)',
+                color: '#94a3b8'
+            },
+            ticks: { 
+                color: '#94a3b8', 
+                maxRotation: 0,
+                callback: function(value) {
+                    return formatTimeChart(value * 1000); 
+                }
+            },
+            grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#94a3b8' },
+            grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            titleColor: '#f8fafc',
+            bodyColor: '#f8fafc',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+                title: (items) => {
+                    const seconds = items[0].parsed.x;
+                    return `T + ${formatTimeDetailed(seconds * 1000)}`;
+                }
+            }
+          }
+        },
+        elements: {
+          line: { tension: 0.2, borderWidth: 2 }, 
+          point: { radius: 0, hitRadius: 10, hoverRadius: 4 }
+        }
+      }
+    };
+
+    function initCharts() {
+      const tempCtx = document.getElementById('tempChart').getContext('2d');
+      const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+      const thrustCtx = document.getElementById('thrustChart').getContext('2d');
+
+      tempChart = new Chart(tempCtx, {
+        ...chartConfig,
+        data: {
+          datasets: [{
+            label: 'Temperature (°C)',
+            data: [],
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            fill: true
+          }]
+        }
+      });
+
+      pressureChart = new Chart(pressureCtx, {
+        ...chartConfig,
+        data: {
+          datasets: [{
+            label: 'Pressure (kPa)',
+            data: [],
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true
+          }]
+        }
+      });
+
+      thrustChart = new Chart(thrustCtx, {
+        ...chartConfig,
+        data: {
+          datasets: [{
+            label: 'Thrust (N)',
+            data: [],
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            fill: true
+          }]
+        }
+      });
+    }
+
+    function updateStatus(connected) {
+      isConnected = connected;
+      const systemStatus = document.getElementById('system-status');
+      const connectionStatus = document.getElementById('connection-status');
+      const systemDot = document.getElementById('system-dot');
+      const connectionDot = document.getElementById('connection-dot');
+      const systemText = document.getElementById('system-text');
+      const connectionText = document.getElementById('connection-text');
+
+      if (connected) {
+        systemStatus.className = 'status-badge connected';
+        connectionStatus.className = 'status-badge connected';
+        systemDot.className = 'status-dot green';
+        connectionDot.className = 'status-dot green';
+        systemText.textContent = 'System Status: Operational';
+        connectionText.textContent = 'Connected';
+      } else {
+        systemStatus.className = 'status-badge disconnected';
+        connectionStatus.className = 'status-badge disconnected';
+        systemDot.className = 'status-dot red';
+        connectionDot.className = 'status-dot red';
+        systemText.textContent = 'System Status: Offline';
+        connectionText.textContent = 'Disconnected';
+      }
+    }
+
+    function addDataToChart(chart, relativeTime, value) {
+      chart.data.datasets[0].data.push({ x: relativeTime, y: value });
+      
+      if (chart.data.datasets[0].data.length > maxPoints) {
+        chart.data.datasets[0].data.shift();
+      }
+      
+      pendingChartUpdate = true; // Signal the render loop
+    }
+
+    function updateTelemetryValues(temp, pressure, thrust) {
+      latestTemp = temp;
+      latestPressure = pressure;
+      latestThrust = thrust;
+    }
+
+    function connectToEsp() {
+      const ipInput = document.getElementById('esp-ip').value;
+      if (!ipInput) {
+        alert("Please enter the IP address shown on the Trigger Board LCD.");
+        return;
+      }
+      connectWebSocket(ipInput);
+    }
+
+    function connectWebSocket(ipAddress) {
+      if (socket) {
+        socket.close();
+      }
+
+      try {
+        console.log(`Attempting to connect to ws://${ipAddress}:81`);
+        addEventToLog(`Connecting to ${ipAddress}...`);
+        
+        socket = new WebSocket(`ws://${ipAddress}:81`); 
+
+        socket.onopen = function() {
+          console.log('WebSocket connected successfully');
+          updateStatus(true);
+          addEventToLog('Telemetry connection established.', 'success'); 
+          localStorage.setItem('lastEspIp', ipAddress);
+          if (!isRecording) zeroTime = Date.now(); 
+        };
+
+        socket.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            
+            const currentTime = Date.now();
+            const elapsedTimeMs = currentTime - zeroTime;
+            const relativeTimeSeconds = elapsedTimeMs / 1000.0;
+            
+            const temp = parseFloat(data.temp);
+            const pressure = parseFloat(data.pressure);
+            const thrust = parseFloat(data.thrust);
+
+            if (isNaN(temp) || isNaN(pressure) || isNaN(thrust)) {
+              console.warn('Invalid data received:', data);
+              return;
+            }
+
+            updateTelemetryValues(temp, pressure, thrust);
+            
+            addDataToChart(tempChart, relativeTimeSeconds, temp);
+            addDataToChart(pressureChart, relativeTimeSeconds, pressure);
+            addDataToChart(thrustChart, relativeTimeSeconds, thrust);
+
+            if (isRecording) {
+                const formattedTime = formatTimeDetailed(elapsedTimeMs);
+                csvData.push([
+                  formattedTime, 
+                  temp.toFixed(2),
+                  pressure.toFixed(2),
+                  thrust.toFixed(2)
+                ]);
+            }
+
+            if (data.ignition_armed !== undefined) {
+                updateIgnitionArmedStatus(data.ignition_armed);
+            }
+
+            if (data.event) {
+                if (data.event.toLowerCase().includes('ignition armed')) {
+                    addEventToLog(data.event, 'info', true);
+                } else if (data.event.toLowerCase().includes('ignition not armed') || data.event.toLowerCase().includes('ignition disarmed')) {
+                    addEventToLog(data.event, 'info', false);
+                } else {
+                    addEventToLog(data.event);
+                }
+            } else {
+                if (thrust > 500 && !window.ignitionLogged) {
+                    addEventToLog('Solid Rocket Motor: Ignition Detected!');
+                    window.ignitionLogged = true;
+                }
+                if (window.armedStatusLogged !== isIgnitionArmed) {
+                    addEventToLog(`Ignition System Status:`, 'status', isIgnitionArmed);
+                    window.armedStatusLogged = isIgnitionArmed;
+                }
+            }
+
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        };
+
+        socket.onclose = function() {
+          console.log('WebSocket connection closed');
+          updateStatus(false);
+          addEventToLog('Telemetry connection lost.', 'warning');
+        };
+
+        socket.onerror = function(error) {
+          console.error('WebSocket error:', error);
+          updateStatus(false);
+          addEventToLog(`WebSocket error. Check IP address.`, 'error');
+        };
+
+      } catch (error) {
+        console.error('Failed to create WebSocket connection:', error);
+        updateStatus(false);
+        addEventToLog(`Failed to connect: ${error.message}`, 'error');
+      }
+    }
+
+    function downloadCSV() {
+      if (csvData.length <= 1) { 
+        addEventToLog('No telemetry data recorded yet.', 'warning');
+        return;
+      }
+
+      const csv = csvData.map(row => 
+        row.map(val => `"${val}"`).join(',')
+      ).join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      const dateStr = new Date().toISOString().split('T')[0];
+      const timeStr = new Date().toTimeString().split(' ')[0].replace(/:/g, '-');
+      a.download = `nakuja_telemetry_${dateStr}_${timeStr}.csv`;
+      
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      addEventToLog('Telemetry data downloaded as CSV.', 'success');
+    }
+
+    function generateDemoData() {
+      if (!isConnected) {
+        const currentTime = Date.now();
+        const elapsedTimeMs = currentTime - zeroTime;
+        const relativeTimeSeconds = elapsedTimeMs / 1000.0;
+
+        //const temp = 25 + Math.sin(currentTime / 10000) * 20 + Math.random() * 5;
+        //const pressure = 150 + Math.cos(currentTime / 8000) * 50 + Math.random() * 10;
+        //const thrust = 1200 + Math.sin(currentTime / 12000) * 300 + Math.random() * 20;
+
+        updateTelemetryValues(temp, pressure, thrust);
+        
+        addDataToChart(tempChart, relativeTimeSeconds, temp);
+        addDataToChart(pressureChart, relativeTimeSeconds, pressure);
+        addDataToChart(thrustChart, relativeTimeSeconds, thrust);
+
+        if (isRecording) {
+            const formattedTime = formatTimeDetailed(elapsedTimeMs);
+            csvData.push([
+              formattedTime,
+              temp.toFixed(2),
+              pressure.toFixed(2),
+              thrust.toFixed(2)
+            ]);
+        }
+
+        if (currentTime % 15000 < 1000 && !window.demoArmEvent) {
+            const arm = Math.random() < 0.7;
+            updateIgnitionArmedStatus(arm);
+            addEventToLog(`DEMO: Ignition System ${arm ? 'Armed' : 'Disarmed'}.`, 'demo', arm);
+            window.demoArmEvent = true;
+            setTimeout(() => window.demoArmEvent = false, 2000);
+        }
+        if (currentTime % 25000 < 1000 && !window.demoIgnitionEvent) {
+            addEventToLog('DEMO: Solid Rocket Motor Ignited!');
+            window.demoIgnitionEvent = true;
+            setTimeout(() => window.demoIgnitionEvent = false, 2000);
+        }
+        if (currentTime % 10000 < 1000 && window.lastDemoArmedStatus !== isIgnitionArmed) {
+            addEventToLog(`DEMO: Ignition System Status:`, 'demo-status', isIgnitionArmed);
+            window.lastDemoArmedStatus = isIgnitionArmed;
+        }
+      }
+    }
+
+    // THE UI RENDER LOOP
+    function uiRenderLoop() {
+        const now = Date.now();
+
+        if (now - lastUiUpdate > 100) {
+            document.getElementById('temp-value').textContent = `${latestTemp.toFixed(1)} °C`;
+            document.getElementById('pressure-value').textContent = `${latestPressure.toFixed(1)} kPa`;
+            document.getElementById('thrust-value').textContent = `${latestThrust.toFixed(1)} N`;
+            lastUiUpdate = now;
+        }
+
+        if (pendingChartUpdate) {
+            if (tempChart) tempChart.update('none');
+            if (pressureChart) pressureChart.update('none');
+            if (thrustChart) thrustChart.update('none');
+            pendingChartUpdate = false;
+        }
+
+        requestAnimationFrame(uiRenderLoop);
+    }
+  
+    document.getElementById('download-btn').addEventListener('click', downloadCSV);
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 NAKUJA SOLIDS DASHBOARD - Initializing...');
+      
+      initCharts();
+      
+      const lastIp = localStorage.getItem('lastEspIp');
+      if (lastIp) {
+        document.getElementById('esp-ip').value = lastIp;
+      }
+      
+      setInterval(generateDemoData, 12); 
+      
+      requestAnimationFrame(uiRenderLoop);
+
+      console.log('Dashboard initialized successfully!');
+      addEventToLog('Dashboard loaded. Enter IP to connect.'); 
+    });
+
+    window.addEventListener('beforeunload', function() {
+      if (socket) {
+        socket.close();
+      }
+    });
+  </script>
+</body>
+</html>
