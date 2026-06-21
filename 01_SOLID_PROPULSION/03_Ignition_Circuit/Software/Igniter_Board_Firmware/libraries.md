@@ -2,23 +2,22 @@
 
 ## Overview
 
-This file lists the main libraries required by the igniter board firmware.
+This file lists the libraries required by the igniter board firmware.
 
-## Arduino / ESP32 Libraries
+## Libraries
 
 | Library | Purpose |
 |---|---|
-| WiFi | ESP32 wireless support |
-| esp_now | ESP-NOW communication |
-| HX711 / HX711_ADC | Load-cell data acquisition |
-| OneWire | DS18B20 communication |
-| DallasTemperature | Temperature reading |
-| ArduinoJson | Telemetry packet formatting, if used |
+| `WiFi.h` | ESP32 Wi-Fi mode setup |
+| `esp_now.h` | ESP-NOW communication |
+| `HX711_ADC.h` | HX711 load-cell data acquisition |
+| `OneWire.h` | OneWire communication for DS18B20 |
+| `DallasTemperature.h` | DS18B20 temperature reading |
+| `Arduino.h` | Core Arduino functions |
 
 ## Notes
 
-- Confirm the exact library names used in the final firmware.
-- Record tested library versions where possible.
-- Update this file whenever a new dependency is added.
-- If Arduino IDE is used, note the board package version.
-- If PlatformIO is used, document dependencies in `platformio.ini`.
+- The firmware uses the ESP32 Arduino core.
+- The receive callback uses the ESP32 core 3.x callback format.
+- Confirm the installed HX711 library matches `HX711_ADC.h`.
+- Record tested library versions after successful compilation.
