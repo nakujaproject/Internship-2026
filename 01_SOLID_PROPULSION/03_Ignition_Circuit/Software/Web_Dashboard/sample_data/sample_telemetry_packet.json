@@ -1,0 +1,7 @@
+{
+  "temp": 27.5,
+  "pressure": 101.3,
+  "thrust": 12.8,
+  "ignition_armed": false,
+  "event": "Sample telemetry packet"
+}
