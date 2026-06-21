@@ -7,14 +7,19 @@
 // Board identity
 #define BOARD_NAME "NAKUJA_TRIGGER_BOARD"
 
-// Dashboard Wi-Fi settings
+// Dashboard Wi-Fi access point
 #define WIFI_AP_SSID "NAKUJA"
-#define WIFI_AP_PASSWORD ""
+#define WIFI_AP_PASSWORD "12345678"
 
 // WebSocket settings
 #define WEBSOCKET_PORT 81
 
-// Telemetry forwarding
-#define DASHBOARD_UPDATE_INTERVAL_MS 50
+// LCD configuration
+#define LCD_I2C_ADDRESS 0x3F
+#define LCD_COLUMNS 16
+#define LCD_ROWS 2
+
+// Dashboard update settings
+#define LCD_UPDATE_INTERVAL_MS 250
 
 #endif
