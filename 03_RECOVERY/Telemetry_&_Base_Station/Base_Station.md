@@ -1,6 +1,6 @@
 # Base Station Hardware Documentation
 
-**Nakuja Internship 2026 Recovery | N4 Rocket**
+**Nakuja Internship 2026 Recovery Team | N4 Rocket**
 
 ---
 
