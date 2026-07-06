@@ -1,0 +1,168 @@
+# Base Station Hardware Documentation
+
+**Nakuja Internship 2026 Recovery | N4 Rocket**
+
+---
+
+## 1. Introduction
+
+The Nakuja N4 Base Station is the ground control hardware unit used to command, monitor, and recover the N4 rocket during flight operations. It functions as the primary interface between the ground crew and the rocket's Flight Computer (FC), enabling real-time monitoring of telemetry and the issuing of safety-critical commands during the launch and recovery sequence.
+
+The base station is a self-contained, battery-powered unit built around two microcontrollers (an Arduino ATMEGA2560 and a NodeMCU-32S ESP32) and is designed to be portable, robust, and operable in the field.
+
+### Key Functions
+* **Arming:** Enables a physical arming switch and corresponding indicator LED that must be actuated by the ground crew before the recovery system (parachute deployment charges) can be live. This is a safety interlock that prevents accidental deployment during handling, transport, and pad operations.
+* **Telemetry Reception:** Continuously receives downlink telemetry data (e.g., altitude, GPS position, battery status, system state) transmitted by the Flight Computer over the wireless link via the patch antenna, and relays this data to a PC over USB for logging, display, and analysis.
+* **Parachute Deployment:** Allows the ground crew to transmit discrete commands to the Flight Computer through a terminal interface on the PC or the on-board keypad, including manual deployment of the drogue and/or main parachute in the event of a recovery anomaly.
+
+---
+
+## 2. System Architecture & Signal Flow
+
+### Data & Command Signal Paths
+* **Telemetry Path (Downlink):** Flight Computer → (RF downlink) → Patch Antenna → RF Amplifier → XBee Pro radio module → Arduino ATMEGA2560 → Serial/USB → Ground PC
+* **Command Path (Uplink):** Ground PC / Keypad → Arduino ATMEGA2560 → XBee Pro radio module → RF Amplifier → Patch Antenna → (RF uplink) → Flight Computer
+* **Auxiliary Path:** ESP32 (NodeMCU-32S) → handles auxiliary I/O: battery-level sensing, status LEDs, and Bluetooth-based status reporting, communicating with the ATMEGA2560 over UART.
+* **Power Distribution:** 4S Li-Fe battery pack → BMS → Buck Converters (5V/3.3V) → distributes regulated power to all subsystems.
+
+### Wireless Communication
+The base station communicates with the Flight Computer entirely wirelessly, using a long-range, license-free RF data link. Wireless communication is implemented using XBee Pro radio modules which independently manage packetization, addressing, error checking, and over-the-air transmission. 
+
+To extend the reliable range of the wireless link, the base station's receive/transmit path is routed through an external patch antenna rather than relying solely on the XBee module's integral antenna.
+
+---
+
+## 3. Power System
+
+* **Supply:** Power is supplied by 4 x Lithium-Iron (Li-Fe / LiFePO4) 2500 mAh, 3.7V cells, connected in series to form a single battery pack. Cells are spot-welded together in series (rather than soldered) to form a low-resistance, mechanically robust series stack. The resulting pack is housed in a custom 3D-printed enclosure, designed to mechanically secure the cells, provide impact protection, and route wiring cleanly to the BMS and power input connector.
+* **Battery Management:** The series battery stack is interfaced with a 3S-rated Battery Management System (BMS) that serves as a protection circuit sitting between the raw cell stack and the rest of the power system. It is responsible for over-charge protection, over-discharge protection, over-current protection, and short-circuit protection.
+* **Voltage Regulation:** The regulated output of the BMS is stepped down to the voltages required by the onboard electronics using two buck converters: 3.3V and 5V.
+
+---
+
+## 4. User Interface & Indicators
+
+### Hardware Switches
+* **Power Switch:** Controls the main power state of the base station.
+* **Arming Switch:** Arms the recovery system and turns on the Armed LED to confirm status, enabling parachute deployment commands to go live.
+
+### Status LEDs
+| LED | Function |
+| :--- | :--- |
+| **Armed LED** | Illuminates when the arming switch has been actuated and the system has confirmed an armed state, signaling that parachute deployment commands are now live. |
+| **Data LED** | Pulses/illuminates on receipt of valid telemetry packets from the Flight Computer, giving the operator a visual heartbeat of the downlink. |
+| **Connection LED** | Indicates that a valid wireless link (XBee association) is established between the base station and the Flight Computer. |
+| **4th LED** | Reserved/spare status indicator for additional fault or mode signaling. |
+
+### Keypad Mapping (3x4 Matrix Keypad)
+| Key | Action | Functionality |
+| :---: | :--- | :--- |
+| **0** | HELP | Prints full list of commands/key mapping to the laptop via Serial. |
+| **1** | ARM | Arms the ESP32. |
+| **2** | DISARM | Disarms the ESP32. |
+| **3** | RESET | Sends Reset command to ESP32. |
+| **4** | MAIN ON | Turns on main chute deployment. |
+| **5** | MAIN OFF | Turns off main chute deployment. |
+| **6** | Page Cycle | Cycles the LCD display through its 4 pages: `PAGE_MAIN` → `PAGE_ALT` → `PAGE_GPS` → `PAGE_PYRO` → back to `PAGE_MAIN`. Clears and redraws the LCD. |
+| **7** | DROGUE_ON | Turns on drogue chute deployment. |
+| **8** | DROGUE_OFF | Turns off drogue chute deployment. |
+| **9** | STATUS | Prints a status string to the laptop over USB serial (Shows `"STATUS->USB"` on LCD row 3). |
+| **\*** | XBee Toggle | Toggles a local boolean (`xbeeOnLocal`) and sends either `XBEE_ON` or `XBEE_OFF` to the ESP32 depending on the new state. *Note: this toggle is purely local and can desync if a command fails.* |
+| **#** | Clear LCD | Clears the LCD screen and forces a full redraw of the current page. |
+
+### LCD Display
+A 16x2-character LCD display with an I2C interface module provides at-a-glance status information (e.g., link status, armed state, battery level) directly on the base station enclosure.
+
+---
+
+## 5. Base Station Controllers
+
+### Arduino ATMEGA 2560 (Central Controller)
+Responsible for:
+* Managing the XBee Pro shield and the serial command/telemetry protocol to and from the Flight Computer.
+* Scanning the keypad matrix and driving the I2C LCD display.
+* Driving the Armed/Data/Connection status LEDs and reading the arming switch.
+* Forwarding telemetry received over the XBee link to the ground PC over USB/serial, and forwarding commands from the PC/keypad to the XBee link.
+* Communicating with the ESP32 module over UART for auxiliary data such as battery level.
+
+### NodeMCU-32S (ESP32)
+Handles auxiliary monitoring functions, primarily:
+* **Battery-level sensing:** Reading the analog voltage from the resistor-divider network and computing the remaining battery state-of-charge.
+* Links with the XBees and reports back to the Arduino MEGA 2560.
+
+---
+
+## 6. Fabrication
+
+* **PCB Design:** The base station's circuit board was produced in-house using a PCB etching process. The copper-clad board was patterned and chemically etched to form the circuit traces, after which through-hole and surface-mount components were manually soldered onto the board.
+* **Testing:** Continuity testing is performed across all etched traces after fabrication to verify that no open circuits (incomplete etches) or short circuits (etching defects/bridges) are present before populating the board with components.
+* **Battery Casing:** The 4-cell Li-Fe battery pack is housed in a custom-designed, 3D-printed casing dimensioned specifically to the spot-welded cell stack, providing mechanical retention and protection.
+
+---
+
+## 7. Bill of Materials (BOM)
+
+| Component | EasyEDA Footprint | Qty |
+| :--- | :--- | :---: |
+| Buck converter (3.3V) | MP1584EN-5V | 1 |
+| Buck converter (5V) | MP1584EN-5V | 1 |
+| Switches | KEY-SMD_L6.0-W3.6-LS8.0 | 2 |
+| LED | LED-TH LED-3MM_RED | 4 |
+| Capacitor 10µF | CAP-TH BD5.0-P2.00-D0.6-FD | 2 |
+| Diode | DIODE-1N4001 | 2 |
+| XT30 Connector | CONN-TH_XT30UPB-F | 1 |
+| 330Ω Resistor | RESISTORS THROUGHHOLE: RESISTOR_HORIZONTAL_RM10MM-VG | 3 |
+| 10kΩ Resistor | RESISTORS_THROUGHHOLE: RESISTOR_HORIZONTAL_RM10MM-VG | 1 |
+| 6.2kΩ Resistor | RESISTORS THROUGHHOLE: RESISTOR_HORIZONTAL_RM10MM-VG | 1 |
+| 1kΩ Resistor | RESISTORS THROUGHHOLE: RESISTOR HORIZONTAL RM10MM-VG | 1 |
+| RF Amplifier (patch antenna) | CONN-TH_XT30UPB-F | 1 |
+| Keypad (3x4) | KEYPAD3X4 | 1 |
+| XBee Pro Shield V03 | XBEE PRO V03 SHIELD | 1 |
+| Arduino ATMEGA2560 | ARDUINO_ATMEGA2560_UFFH | 1 |
+| NodeMCU-32S (ESP32) | AI-THINKER_NODEMCU-32SLUA | 1 |
+| LCD Display (16x2, I2C) | 16*2 I2C LCD DISPLAY WITH INTERFACE1 | 1 |
+| Bluetooth Module | BLUETOOTH MODULE | 1 |
+
+---
+
+## 8. Pin Assignments
+
+### Arduino ATMEGA 2560
+| Pin | Function / Connection |
+| :---: | :--- |
+| **D16** | BT RX |
+| **D17** | BT TX |
+| **D20** | LCD SDA |
+| **D21** | LCD SCL |
+| **D30** | Arming Switch |
+| **D32** | Armed LED |
+| **D34** | Data LED |
+| **D35** | Connection LED |
+| **D41** | KEY R2 |
+| **D43** | KEY R1 |
+| **D45** | KEY C2 |
+| **D47** | KEY R3 |
+| **D49** | KEY C0 |
+| **D51** | KEY R0 |
+| **D53** | KEY C1 |
+| **5V** | +5V |
+
+### ESP32 (NodeMCU-32S)
+| Pin | Function / Connection |
+| :---: | :--- |
+| **1 (Vin)** | +5V |
+| **13 (p32)**| XBee 9 |
+| **14 (p35)**| XBee 11 |
+| **15 (p34)**| XBee 10 |
+| **17 (svp)**| Battery Level |
+| **19 (3.3v)**| +3.3V |
+| **29 (P5)** | XBee 12 |
+| **38 (GND)**| GND |
+
+---
+
+## 9. Circuit Schematic & Project Links
+
+* **EasyEDA Schematic & PCB Editor:** [EasyEDA Project Link](https://easyeda.com/editor#id=lb5520bfaf461454499cd3f7287e3d1cc%7Cb280eb9beedb4d29968024bd1edce2d%7Cb386eee2c0b64f25b951a49ab4f452d2)
+* **ESP32 Firmware Code:** [esp32_xbee_i2c_bridge.ino on GitHub](https://github.com/nakujaproject/internship2025/blob/e6acc07d8d0487493078e238bd3c8c6412509ef3/recovery%20team/N4-code/N4-Flight-Software/n4-flight-software/test/base_station_complete/esp32%20xbee%20i2c%20bridge.ino)
+* **Arduino MEGA Firmware Code:** [mega_base_station_controller.ino on GitHub](https://github.com/nakujaproject/internship2025/blob/e6acc07d8d0487493078e238bd3c8c6412509ef3/recovery%20team/N4-code/N4-Flight-Software/n4-flight-software/test/base_station_complete/mega%20base station_controller.ino)
