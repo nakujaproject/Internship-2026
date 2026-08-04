@@ -12,7 +12,7 @@ Presentation #5: https://docs.google.com/presentation/d/14iUnRXymV43X4VfOrji3tKm
 
 Presentation #6: https://docs.google.com/presentation/d/1Qv-uvQDHprw7jU_ZSY1Gbw1IGDlXt2iL/edit?usp=sharing&ouid=112381216661266438333&rtpof=true&sd=true
 
-Presentation #7: 
+Presentation #7: https://docs.google.com/presentation/d/11VC7h255_AMkoP2Qm9FZvTYndv2R7Cwr/edit?usp=sharing&ouid=112381216661266438333&rtpof=true&sd=true
 
 Presentation #8: 
 
