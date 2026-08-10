@@ -14,7 +14,7 @@ Presentation #6: https://docs.google.com/presentation/d/1Qv-uvQDHprw7jU_ZSY1Gbw1
 
 Presentation #7: https://docs.google.com/presentation/d/11VC7h255_AMkoP2Qm9FZvTYndv2R7Cwr/edit?usp=sharing&ouid=112381216661266438333&rtpof=true&sd=true
 
-Presentation #8: 
+Presentation #8: https://docs.google.com/presentation/d/121KdjfUZ_9mKeF1wK18ANuWz1Q0s7TLr/edit?slide=id.g3f60be24b50_0_5#slide=id.g3f60be24b50_0_5
 
 Presentation #9: 
 
