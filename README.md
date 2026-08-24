@@ -1,8 +1,8 @@
 # Nakuja Project internship 2026
 
-**Mission**: Build and launch a sub-orbital rocket to 100 km (Kármán Line).
+**Vision**: Build and launch a sub-orbital rocket to 100 km (Kármán Line).
 
-**Current Goal**: Successful N4 Launch by end of July 2026.
+**Mission**: Successful N4 Launch by September 2026.
 
 ## Quick Navigation
 - [Project Overview](./00_PROJECT_OVERVIEW)
