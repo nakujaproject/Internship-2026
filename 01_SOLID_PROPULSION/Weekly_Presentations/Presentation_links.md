@@ -18,7 +18,7 @@ Presentation #8: https://docs.google.com/presentation/d/121KdjfUZ_9mKeF1wK18ANuW
 
 Presentation #9: https://docs.google.com/presentation/d/1sVY3ufdjaZ3lmKxLwi-fSIYu_5_NUdGm/edit?usp=sharing&ouid=115966132122201496639&rtpof=true&sd=true
 
-Presentation #10: 
+Presentation #10: https://docs.google.com/presentation/d/1PvfcLkmy_QM1rzvdRfmZfQPZK7LqyZLe/edit?usp=sharing&ouid=115966132122201496639&rtpof=true&sd=true
 
 Presentation #11:
 
