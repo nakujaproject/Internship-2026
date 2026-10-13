@@ -1,0 +1,6 @@
+02_AIRFRAME/Weekly_Presentations/*.pdf filter=lfs diff=lfs merge=lfs -text
+02_AIRFRAME/Weekly_Presentations/*.pptx filter=lfs diff=lfs merge=lfs -text
+03_RECOVERY/Weekly_Presentations/*.pptx filter=lfs diff=lfs merge=lfs -text
+03_RECOVERY/Weekly_Presentations/*.pdf filter=lfs diff=lfs merge=lfs -text
+06_LIQUID_PROPULSION/Weekly_Presentations/*.pptx filter=lfs diff=lfs merge=lfs -text
+06_LIQUID_PROPULSION/Weekly_Presentations/*.pdf filter=lfs diff=lfs merge=lfs -text
